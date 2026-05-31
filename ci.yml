@@ -1,0 +1,65 @@
+name: CI/CD — URL Shortener
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  AWS_REGION: eu-west-1
+  STACK_NAME: url-shortener-prod
+
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pytest boto3
+
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+
+  deploy:
+    name: Deploy to AWS
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: SAM Build
+        run: sam build --template infrastructure/template.yaml
+
+      - name: SAM Deploy
+        run: |
+          sam deploy \
+            --stack-name ${{ env.STACK_NAME }} \
+            --region ${{ env.AWS_REGION }} \
+            --capabilities CAPABILITY_IAM \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset
