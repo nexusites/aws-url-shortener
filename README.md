@@ -1,4 +1,5 @@
 # Serverless URL Shortener
+**🔗 Live demo:** https://73si4d4qbc.execute-api.eu-west-1.amazonaws.com/Prod
 
 ![CI/CD](https://github.com/YOUR_USERNAME/aws-url-shortener/actions/workflows/ci.yml/badge.svg)
 ![AWS Free Tier](https://img.shields.io/badge/AWS-Free%20Tier-orange?logo=amazon-aws)
