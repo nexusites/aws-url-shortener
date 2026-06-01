@@ -151,4 +151,3 @@ Every push to `main` triggers the GitHub Actions pipeline:
 ## Author
 
 **Riccardo Lotronto** · [GitHub](https://github.com/nexusites)
-**Your Name** · [LinkedIn](https://linkedin.com/in/yourprofile) · [GitHub](https://github.com/YOUR_USERNAME)
