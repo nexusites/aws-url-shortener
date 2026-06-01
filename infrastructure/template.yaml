@@ -18,7 +18,6 @@ Globals:
     Environment:
       Variables:
         TABLE_NAME: !Ref UrlTable
-        BASE_URL: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
 
 Resources:
 
@@ -65,23 +64,6 @@ Resources:
           Properties:
             Path: /stats/{code}
             Method: GET
-
-  # ── CloudWatch Alarms ────────────────────────────────────────────────────
-  LambdaErrorAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmName: !Sub "url-shortener-${Stage}-errors"
-      AlarmDescription: "Lambda error rate > 5 in 5 minutes"
-      MetricName: Errors
-      Namespace: AWS/Lambda
-      Dimensions:
-        - Name: FunctionName
-          Value: !Ref UrlShortenerFunction
-      Statistic: Sum
-      Period: 300
-      EvaluationPeriods: 1
-      Threshold: 5
-      ComparisonOperator: GreaterThanOrEqualToThreshold
 
 Outputs:
   ApiEndpoint:

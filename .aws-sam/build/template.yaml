@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "Serverless URL Shortener \u2014 API Gateway + Lambda + DynamoDB All\
+  \ resources stay within the AWS Free Tier for the first 12 months.\n"
+Parameters:
+  Stage:
+    Type: String
+    Default: prod
+    AllowedValues:
+    - dev
+    - staging
+    - prod
+Globals:
+  Function:
+    Runtime: python3.12
+    MemorySize: 128
+    Timeout: 10
+    Environment:
+      Variables:
+        TABLE_NAME:
+          Ref: UrlTable
+Resources:
+  UrlTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: url-shortener-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: short_code
+        AttributeType: S
+      KeySchema:
+      - AttributeName: short_code
+        KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+  UrlShortenerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: url-shortener-${Stage}
+      CodeUri: UrlShortenerFunction
+      Handler: handler.lambda_handler
+      Description: Handles POST /shorten, GET /r/{code}, GET /stats/{code}
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: UrlTable
+      Events:
+        Shorten:
+          Type: Api
+          Properties:
+            Path: /shorten
+            Method: POST
+        Redirect:
+          Type: Api
+          Properties:
+            Path: /r/{code}
+            Method: GET
+        Stats:
+          Type: Api
+          Properties:
+            Path: /stats/{code}
+            Method: GET
+    Metadata:
+      SamResourceId: UrlShortenerFunction
+Outputs:
+  ApiEndpoint:
+    Description: Base URL for the API
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}
+  TableName:
+    Description: DynamoDB table name
+    Value:
+      Ref: UrlTable
+  FunctionArn:
+    Description: Lambda function ARN
+    Value:
+      Fn::GetAtt:
+      - UrlShortenerFunction
+      - Arn
