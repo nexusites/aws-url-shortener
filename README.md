@@ -1,11 +1,12 @@
 # Serverless URL Shortener
+
 **🔗 Live demo:** https://73si4d4qbc.execute-api.eu-west-1.amazonaws.com/Prod
 
-![CI/CD](https://github.com/YOUR_USERNAME/aws-url-shortener/actions/workflows/ci.yml/badge.svg)
+[![CI/CD](https://github.com/nexusites/aws-url-shortener/actions/workflows/ci.yml/badge.svg)](https://github.com/nexusites/aws-url-shortener/actions/workflows/ci.yml)
 ![AWS Free Tier](https://img.shields.io/badge/AWS-Free%20Tier-orange?logo=amazon-aws)
 ![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
 
-A production-ready URL shortener built entirely on AWS serverless services.  
+A production-ready URL shortener built entirely on AWS serverless services.
 Zero fixed infrastructure cost — runs 100% within the AWS Free Tier.
 
 ---
@@ -17,10 +18,9 @@ graph LR
     Client -->|POST /shorten| APIGW[API Gateway]
     Client -->|GET /r/code| APIGW
     Client -->|GET /stats/code| APIGW
-    APIGW --> Lambda[Lambda\nPython 3.12]
-    Lambda -->|Read / Write| DDB[(DynamoDB\nOn-Demand)]
+    APIGW --> Lambda[Lambda Python 3.12]
+    Lambda -->|Read / Write| DDB[(DynamoDB On-Demand)]
     Lambda -->|Metrics & Logs| CW[CloudWatch]
-    DDB -->|TTL auto-delete| DDB
 ```
 
 | Component     | Service              | Free Tier limit                     |
@@ -48,7 +48,7 @@ Shorten a URL.
 **Response `201`:**
 ```json
 {
-  "short_url": "https://xyz.execute-api.eu-west-1.amazonaws.com/prod/r/a3f9c12",
+  "short_url": "https://73si4d4qbc.execute-api.eu-west-1.amazonaws.com/Prod/r/a3f9c12",
   "short_code": "a3f9c12",
   "original_url": "https://example.com/very/long/path",
   "expires_in_days": 30
@@ -70,9 +70,9 @@ Returns click statistics.
 {
   "short_code": "a3f9c12",
   "original_url": "https://example.com/very/long/path",
-  "short_url": "https://xyz.execute-api.eu-west-1.amazonaws.com/prod/r/a3f9c12",
+  "short_url": "https://73si4d4qbc.execute-api.eu-west-1.amazonaws.com/Prod/r/a3f9c12",
   "click_count": 42,
-  "created_at": "2024-06-01T10:30:00+00:00"
+  "created_at": "2026-06-01T10:30:00+00:00"
 }
 ```
 
@@ -104,7 +104,7 @@ aws-url-shortener/
 
 ### 1. Clone and build
 ```bash
-git clone https://github.com/YOUR_USERNAME/aws-url-shortener.git
+git clone https://github.com/nexusites/aws-url-shortener.git
 cd aws-url-shortener
 sam build --template infrastructure/template.yaml
 ```
@@ -137,7 +137,8 @@ Every push to `main` triggers the GitHub Actions pipeline:
 - **Single Lambda function** with internal routing keeps cold starts minimal and IAM permissions simple.
 - **DynamoDB TTL** automatically expires old links at zero cost — no cron job needed.
 - **On-Demand billing** on DynamoDB means no capacity planning and stays within free tier for portfolio usage.
-- **Atomic counter** (`update_item` with `ADD`) ensures click counts are accurate even under concurrent traffic.
+- **Runtime base URL** is built from the request context, so the same code works across stages without hardcoded endpoints.
+- **Atomic counter** (`update_item`) ensures click counts are accurate even under concurrent traffic.
 
 ---
 
@@ -149,4 +150,5 @@ Every push to `main` triggers the GitHub Actions pipeline:
 
 ## Author
 
+**Riccardo Lotronto** · [GitHub](https://github.com/nexusites)
 **Your Name** · [LinkedIn](https://linkedin.com/in/yourprofile) · [GitHub](https://github.com/YOUR_USERNAME)
