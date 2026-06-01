@@ -10,7 +10,7 @@ A production-ready URL shortener built entirely on AWS serverless services. Zero
 
 ## Architecture
 
-​```mermaid
+```mermaid
 graph LR
     Client -->|POST /shorten| APIGW[API Gateway]
     Client -->|GET /r/code| APIGW
@@ -18,7 +18,7 @@ graph LR
     APIGW --> Lambda[Lambda Python 3.12]
     Lambda -->|Read / Write| DDB[(DynamoDB On-Demand)]
     Lambda -->|Metrics and Logs| CW[CloudWatch]
-​```
+```
 
 | Component     | Service              | Free Tier limit                 |
 |---------------|----------------------|---------------------------------|
@@ -33,19 +33,19 @@ graph LR
 Shorten a URL.
 
 Request body:
-​```json
+```json
 { "url": "https://example.com/long/path", "ttl_days": 30 }
-​```
+```
 
 Response 201:
-​```json
+```json
 {
   "short_url": "https://73si4d4qbc.execute-api.eu-west-1.amazonaws.com/Prod/r/a3f9c12",
   "short_code": "a3f9c12",
   "original_url": "https://example.com/long/path",
   "expires_in_days": 30
 }
-​```
+```
 
 ### GET /r/{code}
 Redirects to the original URL (301).
@@ -55,12 +55,12 @@ Returns click statistics.
 
 ## Deploy
 
-​```bash
+```bash
 git clone https://github.com/nexusites/aws-url-shortener.git
 cd aws-url-shortener
 sam build --template infrastructure/template.yaml
 sam deploy --guided
-​```
+```
 
 ## Key Design Decisions
 
