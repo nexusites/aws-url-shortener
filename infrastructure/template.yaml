@@ -49,6 +49,11 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref UrlTable
       Events:
+        Home:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
         Shorten:
           Type: Api
           Properties:
